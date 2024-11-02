@@ -1,6 +1,5 @@
 package controller;
 
-import model.Cell;
 import model.CellFactory;
 import model.Grid;
 
@@ -9,7 +8,7 @@ import java.util.Scanner;
 public class GameSetup {
     private static final Scanner scanner = new Scanner(System.in);
 
-    public static void showColorOptions() {
+    public static void showOptions() {
         System.out.println("Enter uppercase letters to represent pieces, e.g., R for Red, B for Blue, etc.");
         System.out.println("Use '.' for EMPTY and '#' for OBSTACLE.");
     }
