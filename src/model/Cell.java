@@ -2,9 +2,11 @@ package model;
 
 public class Cell {
     private CellType type;
+    private char symbol; // Add symbol directly to the cell
 
-    public Cell(CellType type) {
+    public Cell(CellType type, char symbol) {
         this.type = type;
+        this.symbol = symbol; // Initialize with default symbol
     }
 
     public CellType getType() {
@@ -16,10 +18,10 @@ public class Cell {
     }
 
     public char getSymbol() {
-        return type.getSymbol();
+        return symbol;
     }
 
     public void setSymbol(char symbol) {
-        type.setSymbol(symbol);
+        this.symbol = symbol;
     }
 }

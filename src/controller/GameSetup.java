@@ -1,5 +1,6 @@
 package controller;
 
+import model.Cell;
 import model.CellFactory;
 import model.Grid;
 
@@ -9,8 +10,16 @@ public class GameSetup {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void showOptions() {
-        System.out.println("Enter uppercase letters to represent pieces, e.g., R for Red, B for Blue, etc.");
-        System.out.println("Use '.' for EMPTY and '#' for OBSTACLE.");
+        System.out.println("🔹 Game Setup Instructions 🔹");
+        System.out.println("Choose letters to represent each piece's color:");
+        System.out.println("  - 🟥 R for Red");
+        System.out.println("  - 🟦 B for Blue");
+        System.out.println("  - 🟨 Y for Yellow");
+        System.out.println("  - 🟩 G for Green");
+        System.out.println("  - 🟪 P for Purple");
+        System.out.println("Use '.' to represent an EMPTY cell.");
+        System.out.println("Use '#' to represent an OBSTACLE cell.");
+        System.out.println("Example grid input: R B . # Y\n");
     }
 
     public static Grid initializeGrid() {
@@ -24,9 +33,13 @@ public class GameSetup {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 char symbol = scanner.next().charAt(0);
-                grid.getCell(i, j).setType(CellFactory.createCell(symbol).getType()); // Set the cell type
+                Cell cell = CellFactory.createCell(symbol);
+                grid.getCell(i, j).setType(cell.getType()); // Set the cell type
+                grid.getCell(i, j).setSymbol(cell.getSymbol()); // Set the cell symbol
             }
         }
+
+        grid.backupInitialGrid();
         return grid;
     }
 }

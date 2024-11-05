@@ -11,23 +11,21 @@ public class Grid {
         this.cols = cols;
         cells = new Cell[rows][cols];
         initializeGrid();
-        backupInitialGrid();
     }
 
     private void initializeGrid() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                cells[i][j] = new Cell(CellType.EMPTY);  // Default to empty
+                cells[i][j] = new Cell(CellType.EMPTY, '.');  // Default to empty
             }
         }
     }
 
-    private void backupInitialGrid() {
+    public void backupInitialGrid() {
         initialCells = new Cell[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                initialCells[i][j] = new Cell(cells[i][j].getType());
-                initialCells[i][j].setSymbol(cells[i][j].getSymbol());
+                initialCells[i][j] = new Cell(cells[i][j].getType(), cells[i][j].getSymbol());
             }
         }
     }

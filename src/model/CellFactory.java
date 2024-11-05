@@ -4,14 +4,12 @@ public class CellFactory {
     public static Cell createCell(char symbol) {
         switch (symbol) {
             case '.':
-                return new Cell(CellType.EMPTY);
+                return new Cell(CellType.EMPTY, symbol);
             case '#':
-                return new Cell(CellType.OBSTACLE);
+                return new Cell(CellType.OBSTACLE, symbol);
             default:
                 if (Character.isUpperCase(symbol)) {
-                    CellType pieceType = CellType.PIECE;
-                    pieceType.setSymbol(symbol);  // Set symbol for the piece
-                    return new Cell(pieceType);
+                    return new Cell(CellType.PIECE, symbol);
                 } else {
                     throw new IllegalArgumentException("Invalid symbol: " + symbol);
                 }
