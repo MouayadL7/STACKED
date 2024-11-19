@@ -17,6 +17,7 @@ public class GameSetup {
         System.out.println("  - 🟨 Y for Yellow");
         System.out.println("  - 🟩 G for Green");
         System.out.println("  - 🟪 P for Purple");
+        System.out.println("  - 🟧 O for Orange");
         System.out.println("Use '.' to represent an EMPTY cell.");
         System.out.println("Use '#' to represent an OBSTACLE cell.");
         System.out.println("Example grid input: R B . # Y\n");
@@ -28,14 +29,14 @@ public class GameSetup {
         System.out.print("Enter number of columns: ");
         int cols = scanner.nextInt();
 
-        Grid grid = new Grid(rows, cols); // Create a new Grid instance
+        Grid grid = new Grid(rows, cols);
         System.out.println("Enter grid symbols row by row:");
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 char symbol = scanner.next().charAt(0);
                 Cell cell = CellFactory.createCell(symbol);
-                grid.getCell(i, j).setType(cell.getType()); // Set the cell type
-                grid.getCell(i, j).setSymbol(cell.getSymbol()); // Set the cell symbol
+                grid.getCell(i, j).setType(cell.getType());
+                grid.getCell(i, j).setSymbol(cell.getSymbol());
             }
         }
 

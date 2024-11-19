@@ -1,6 +1,10 @@
 package app;
 
 import javax.swing.*;
+
+import algorithm.SearchAlgorithm;
+import algorithm.SearchAlgorithmFactory;
+import controller.AlgorithmController;
 import controller.GameController;
 import controller.GameSetup;
 import model.Grid;
@@ -9,8 +13,10 @@ import view.GameView;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Scanner;
 
 public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
     private int moveCount = 0;
     private JLabel movesLabel;
     private JLabel titleLabel; // Add a title label
@@ -23,41 +29,61 @@ public class Main {
     public Main() {
         GameSetup.showOptions();
         Grid grid = GameSetup.initializeGrid();
-        frame = new JFrame("STACKED Game");
-
-        movesLabel = new JLabel("Moves: 0");
-        titleLabel = new JLabel("STACKED GAME", SwingConstants.CENTER); // Centered title label
-        titleLabel.setFont(titleLabel.getFont().deriveFont(24f)); // Increase font size for visibility
 
         GameView gameView = new GameView(grid);
         GameController gameController = new GameController(grid, gameView, this);
-        JMenuBar menuBar = createMenuBar(gameController);
 
-        frame.setJMenuBar(menuBar);
+        AlgorithmController algorithmController = new AlgorithmController();
 
-        // Create a panel for title and moves
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.add(titleLabel, BorderLayout.CENTER); // Add title label to the center
-        titlePanel.add(movesLabel, BorderLayout.SOUTH); // Add moves label to the bottom
+        // Display algorithm choices
+        System.out.println("Select an algorithm to solve the puzzle:");
+        System.out.println("1. DFS");
+        System.out.println("2. BFS");
+        System.out.println("3. UC");
+        String chosenAlgorithm = scanner.nextLine();
+        SearchAlgorithm algorithm = SearchAlgorithmFactory.getAlgorithm(chosenAlgorithm, algorithmController);
 
-        frame.add(titlePanel, BorderLayout.NORTH); // Add title panel at the top
-        frame.add(gameView, BorderLayout.CENTER); // Add gameView in the center
+        // Set the appropriate algorithm
+        algorithmController.setAlgorithm(algorithm, gameController);
 
-        frame.setSize(grid.getCols() * GameView.CELL_SIZE, grid.getRows() * GameView.CELL_SIZE + 50);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        // Solve with the selected algorithm
+        algorithmController.solve(grid);
 
-        // Add a component listener to resize title dynamically
-        frame.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                adjustFont(frame.getWidth());
-            }
-        });
 
-        // Initial font adjustment
-        adjustFont(frame.getWidth());
+//        frame = new JFrame("STACKED Game");
+//
+//        movesLabel = new JLabel("Moves: 0");
+//        titleLabel = new JLabel("STACKED GAME", SwingConstants.CENTER); // Centered title label
+//        titleLabel.setFont(titleLabel.getFont().deriveFont(24f)); // Increase font size for visibility
+//
+//
+//        JMenuBar menuBar = createMenuBar(gameController);
+//
+//        frame.setJMenuBar(menuBar);
+//
+//        // Create a panel for title and moves
+//        JPanel titlePanel = new JPanel(new BorderLayout());
+//        titlePanel.add(titleLabel, BorderLayout.CENTER); // Add title label to the center
+//        titlePanel.add(movesLabel, BorderLayout.SOUTH); // Add moves label to the bottom
+//
+//        frame.add(titlePanel, BorderLayout.NORTH); // Add title panel at the top
+//        frame.add(gameView, BorderLayout.CENTER); // Add gameView in the center
+//
+//        frame.setSize(grid.getCols() * GameView.CELL_SIZE, grid.getRows() * GameView.CELL_SIZE + 50);
+//        frame.setLocationRelativeTo(null);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setVisible(true);
+//
+//        // Add a component listener to resize title dynamically
+//        frame.addComponentListener(new ComponentAdapter() {
+//            @Override
+//            public void componentResized(ComponentEvent e) {
+//                adjustFont(frame.getWidth());
+//            }
+//        });
+//
+//        // Initial font adjustment
+//        adjustFont(frame.getWidth());
     }
 
     private JMenuBar createMenuBar(GameController gameController) {
@@ -158,8 +184,6 @@ public class Main {
         optionsDialog.setLocationRelativeTo(frame); // Center dialog in main game window
         optionsDialog.setVisible(true);
     }
-
-
 
     // Method to adjust title font size based on the window width
     private void adjustFont(int width) {

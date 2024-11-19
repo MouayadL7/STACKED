@@ -3,11 +3,12 @@ package controller;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import model.Cell;
-import model.CellType;
-import model.Grid;
+import model.*;
 import view.GameView;
 import app.Main;
 
@@ -31,28 +32,28 @@ public class GameController {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "moveUp");
         actionMap.put("moveUp", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                moveUp();
+                move(grid, Direction.UP);
             }
         });
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "moveDown");
         actionMap.put("moveDown", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                moveDown();
+                move(grid, Direction.DOWN);
             }
         });
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "moveLeft");
         actionMap.put("moveLeft", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                moveLeft();
+                move(grid, Direction.LEFT);
             }
         });
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "moveRight");
         actionMap.put("moveRight", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                moveRight();
+                move(grid, Direction.RIGHT);
             }
         });
 
@@ -62,6 +63,84 @@ public class GameController {
                 restartGame();
             }
         });
+    }
+
+    public void move(Grid grid, Direction direction) {
+        Cell lastCell;
+        int lastIndex;
+
+        if (direction == Direction.UP || direction == Direction.DOWN) {
+            for (int col = 0; col < grid.getCols(); ++col) {
+                UpdatedData updatedData = new UpdatedData(
+                        grid.getCell(direction == Direction.UP ? 0 : grid.getRows() - 1, col),
+                        direction == Direction.UP ? 0 : grid.getRows() - 1
+                );
+
+                for (int row = (direction == Direction.UP ? 1 : grid.getRows() - 2);
+                     (direction == Direction.UP ? row < grid.getRows() : row >= 0);
+                     row += (direction == Direction.UP ? 1 : -1)) {
+
+                    processCell(grid, updatedData, row, col, direction);
+                }
+            }
+        } else if (direction == Direction.LEFT || direction == Direction.RIGHT) {
+            for (int row = 0; row < grid.getRows(); ++row) {
+                UpdatedData updatedData = new UpdatedData(
+                        grid.getCell(row, direction == Direction.LEFT ? 0 : grid.getCols() - 1),
+                        direction == Direction.LEFT ? 0 : grid.getCols() - 1
+                );
+
+
+                for (int col = (direction == Direction.LEFT ? 1 : grid.getCols() - 2);
+                     (direction == Direction.LEFT ? col < grid.getCols() : col >= 0);
+                     col += (direction == Direction.LEFT ? 1 : -1)) {
+
+
+                    processCell(grid, updatedData, row, col, direction);
+                }
+            }
+        }
+
+//        mainApp.incrementMoveCounter();
+//        updateView();
+//        checkWinCondition();
+    }
+
+    private void processCell(Grid grid, UpdatedData updatedData, int row, int col, Direction direction) {
+        Cell currentCell = grid.getCell(row, col);
+
+        if (currentCell.getType() == CellType.EMPTY) {
+            return;
+        } else if (currentCell.getType() == CellType.OBSTACLE) {
+            updatedData.setLastCell(currentCell);
+            updatedData.setLastIndex((direction == Direction.UP || direction == Direction.DOWN) ? row : col);
+        } else {
+            if (updatedData.getLastCell().getType() == CellType.EMPTY) {
+                updatedData.getLastCell().setType(currentCell.getType());
+                updatedData.getLastCell().setSymbol(currentCell.getSymbol());
+
+                currentCell.setType(CellType.EMPTY);
+                currentCell.setSymbol('.');
+            } else if (updatedData.getLastCell().getType() == CellType.PIECE && currentCell.getSymbol() == updatedData.getLastCell().getSymbol()) {
+                currentCell.setType(CellType.EMPTY);
+                currentCell.setSymbol('.');
+            } else if ((direction == Direction.UP || direction == Direction.LEFT ? updatedData.getLastIndex() + 1 : updatedData.getLastIndex() - 1) != (direction == Direction.UP || direction == Direction.DOWN ? row : col)) {
+                int newIndex = updatedData.getLastIndex() + (direction == Direction.UP || direction == Direction.LEFT ? 1 : -1);
+                Cell targetCell = grid.getCell((direction == Direction.UP || direction == Direction.DOWN) ? newIndex : row,
+                        (direction == Direction.UP || direction == Direction.DOWN) ? col : newIndex);
+                targetCell.setType(currentCell.getType());
+                targetCell.setSymbol(currentCell.getSymbol());
+
+                currentCell.setType(CellType.EMPTY);
+                currentCell.setSymbol('.');
+
+                updatedData.setLastCell(targetCell);
+                updatedData.setLastIndex(newIndex);
+            } else {
+                updatedData.setLastCell(currentCell);
+                updatedData.setLastIndex((direction == Direction.UP || direction == Direction.DOWN) ? row : col);
+            }
+        }
     }
 
     private void moveUp() {
@@ -283,28 +362,9 @@ public class GameController {
     }
 
     private void checkWinCondition() {
-        if (isGameWon()) {
+        if (grid.isGameWon()) {
             mainApp.showWinPopup(this);
         }
-    }
-
-    private boolean isGameWon() {
-        boolean[] vis = new boolean[26]; // Initialize an array of 26 booleans for letters 'A' to 'Z'
-        Arrays.fill(vis, false); // Set all values in the array to false
-
-        for (int row = 0; row < grid.getRows(); row++) {
-            for (int col = 0; col < grid.getCols(); col++) {
-                if (grid.getCell(row, col).getType() == CellType.PIECE) {
-                    int x = grid.getCell(row, col).getSymbol() - 'A'; // Get index based on symbol
-                    if (vis[x]) {
-                        return false; // If we've already seen this symbol, return false
-                    }
-                    vis[x] = true; // Mark this symbol as seen
-                }
-            }
-        }
-
-        return true;
     }
 
     public void startNewGame() {

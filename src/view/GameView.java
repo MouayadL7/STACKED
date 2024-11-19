@@ -13,43 +13,6 @@ public class GameView extends JPanel {
         drawGrid(grid);
     }
 
-    public void displayGrid(Grid grid) {
-        for (int row = 0; row < grid.getRows(); ++row) {
-            for (int col = 0; col < grid.getCols(); ++col) {
-                char symbol = grid.getCell(row, col).getSymbol();
-                if (symbol == '.') {
-                    System.out.print("⬜");
-                }
-                else if (symbol == '#') {
-                    System.out.print("⬛");
-                }
-                else if (symbol == 'R') {
-                    System.out.print("🟥");
-                }
-                else if (symbol == 'B') {
-                    System.out.print("🟦");
-                }
-                else if (symbol == 'G') {
-                    System.out.print("🟩");
-                }
-                else if (symbol == 'Y') {
-                    System.out.print("🟨");
-                }
-                else if (symbol == 'O') {
-                    System.out.print("🟧");
-                }
-                else if (symbol == 'P'){
-                    System.out.print("🟪");
-                }
-            }
-            System.out.println();
-        }
-        for (int col = 0; col < grid.getCols(); col++) {
-            System.out.print("➖");
-        }
-        System.out.println();
-    }
-
     public void drawGrid(Grid grid) {
         this.removeAll(); // Clear previous components
         for (int i = 0; i < grid.getRows(); i++) {
@@ -60,7 +23,6 @@ public class GameView extends JPanel {
         }
         revalidate(); // Refresh layout
         repaint(); // Repaint the panel
-        displayGrid(grid);
     }
 
     public void updateGrid(Grid grid) {

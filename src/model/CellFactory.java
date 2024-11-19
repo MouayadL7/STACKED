@@ -8,7 +8,7 @@ public class CellFactory {
             case '#':
                 return new Cell(CellType.OBSTACLE, symbol);
             default:
-                if (Character.isUpperCase(symbol)) {
+                if (Character.isUpperCase(symbol) && "RBPYGO".contains(String.valueOf(symbol))) {
                     return new Cell(CellType.PIECE, symbol);
                 } else {
                     throw new IllegalArgumentException("Invalid symbol: " + symbol);
